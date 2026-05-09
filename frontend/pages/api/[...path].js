@@ -1,4 +1,5 @@
 import app, { ensureDatabase } from "../../../backend/index.js";
+import demoApi, { shouldUseDemoApi } from "../../lib/demo-api.js";
 
 export const config = {
   api: {
@@ -8,6 +9,10 @@ export const config = {
 };
 
 export default async function handler(req, res) {
+  if (shouldUseDemoApi()) {
+    return demoApi(req, res);
+  }
+
   try {
     await ensureDatabase();
     return app(req, res);
