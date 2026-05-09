@@ -16,6 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+let databaseReady;
 
 app.use(cors());
 app.use(express.json());
@@ -40,20 +41,32 @@ app.get("/", (_req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-sequelize.authenticate()
-.then(() => sequelize.sync())
-.then(()=>{
-    
-    app.listen(PORT, () => {
-        console.log(`Server is running on port http://localhost:${PORT}`);
-        console.log("Database connected successfully");
-    })
-    
-    
+export function ensureDatabase() {
+    if (!databaseReady) {
+        databaseReady = sequelize.authenticate()
+            .then(() => sequelize.sync())
+            .then(() => {
+                console.log("Database connected successfully");
+            });
+    }
 
-})
-.catch((error) => {
+    return databaseReady;
+}
+
+export default app;
+
+const isDirectRun = process.argv[1] && path.resolve(process.argv[1]) === __filename;
+
+if (isDirectRun) {
+    ensureDatabase()
+    .then(()=>{
+        app.listen(PORT, () => {
+            console.log(`Server is running on port http://localhost:${PORT}`);
+        })
+    })
+    .catch((error) => {
         console.error("Error connecting to the database:", error);
         process.exit(1);
     })
+}
 
