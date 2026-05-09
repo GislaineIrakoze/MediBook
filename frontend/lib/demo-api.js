@@ -122,7 +122,7 @@ function createToken(user) {
 }
 
 export function shouldUseDemoApi() {
-  return !process.env.DB_HOST || process.env.DB_HOST === "127.0.0.1";
+  return !process.env.DATABASE_URL && (!process.env.DB_HOST || process.env.DB_HOST === "127.0.0.1");
 }
 
 export default async function demoApi(req, res) {
