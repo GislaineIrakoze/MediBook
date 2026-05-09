@@ -1,0 +1,409 @@
+{
+  "info": {
+    "name": "SanTech Appointment Flow Ready",
+    "description": "Import-ready Postman collection mapped to the flow: Patient Login/Register -> Choose Department -> Select Doctor -> View Available Time -> Book Appointment -> System Checks Availability -> Save Appointment -> Send Confirmation. Note: Choose Department is not implemented in the current backend, so that step remains conceptual/manual. Doctor login is preconfigured to use the seeded doctor account.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "patientEmail",
+      "value": "patient@example.com"
+    },
+    {
+      "key": "patientPassword",
+      "value": "password123"
+    },
+    {
+      "key": "doctorEmail",
+      "value": "test1@gmail.com"
+    },
+    {
+      "key": "doctorPassword",
+      "value": "password123"
+    },
+    {
+      "key": "availableDate",
+      "value": "2026-05-10"
+    },
+    {
+      "key": "appointmentTime",
+      "value": "09:00-10:00"
+    },
+    {
+      "key": "reason",
+      "value": "Checkup"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Patient Login/Register - Register Patient",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('userToken', data.token);",
+              "  pm.collectionVariables.set('userId', data.user.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullname\": \"Patient User\",\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\",\n  \"role\": \"patient\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "2. Patient Login/Register - Login Patient",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('userToken', data.token);",
+              "  pm.collectionVariables.set('userId', data.user.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Select Doctor - Register Doctor (Optional New Doctor)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('doctorToken', data.token);",
+              "  pm.collectionVariables.set('doctorId', data.user.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullname\": \"Dr. Smith\",\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\",\n  \"dob\": \"1980-05-20\",\n  \"gender\": \"male\",\n  \"PhoneNumber\": \"1112223333\",\n  \"emergencyContact\": \"4445556666\",\n  \"role\": \"doctor\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Select Doctor - Login Doctor",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('doctorToken', data.token);",
+              "  pm.collectionVariables.set('doctorId', data.user.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. View Available Time - Create Doctor Availability",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('availabilityId', data.id);",
+              "  pm.collectionVariables.set('availableDate', data.availableDate);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"doctorId\": \"{{doctorId}}\",\n  \"availableDate\": \"{{availableDate}}\",\n  \"availableTimeSlots\": [\"09:00-10:00\", \"10:00-11:00\", \"14:00-15:00\"]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/doctor-availability",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "doctor-availability"
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. View Available Time - Patient View Doctor Availability",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/doctor-availability?doctorId={{doctorId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "doctor-availability"
+          ],
+          "query": [
+            {
+              "key": "doctorId",
+              "value": "{{doctorId}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "7. Book Appointment -> System Checks Availability -> Save Appointment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('appointmentId', data.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"availabilityId\": \"{{availabilityId}}\",\n  \"availabilityDate\": \"{{availableDate}}\",\n  \"appointmentTime\": \"{{appointmentTime}}\",\n  \"reason\": \"{{reason}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      }
+    },
+    {
+      "name": "8. Send Confirmation - Doctor View Own Appointments",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      }
+    },
+    {
+      "name": "9. Send Confirmation - Doctor Approve Appointment",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/{{appointmentId}}/approve",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "{{appointmentId}}",
+            "approve"
+          ]
+        }
+      }
+    },
+    {
+      "name": "10. Send Confirmation - Patient View Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/notifications",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "notifications"
+          ]
+        }
+      }
+    },
+    {
+      "name": "11. Save Appointment - Patient View Appointment By ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/appointments/{{appointmentId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "appointments",
+            "{{appointmentId}}"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SanTech Clinic Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">SanTech clinic experience</p>
+          <h1>Book a visit, confirm a slot, and keep everyone informed.</h1>
+          <p class="hero-text">
+            This interface follows your backend flow closely: patient login, department choice,
+            doctor selection, time selection, booking, availability checks, saving the appointment,
+            and sending confirmation.
+          </p>
+          <div class="hero-steps">
+            <span>Patient Login/Register</span>
+            <span>Choose Department</span>
+            <span>Select Doctor</span>
+            <span>View Available Time</span>
+            <span>Book Appointment</span>
+            <span>Send Confirmation</span>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="pulse-card">
+            <p class="label">Live workflow</p>
+            <h2 id="flowHeadline">Waiting for patient sign-in</h2>
+            <p id="flowSummary">
+              Start by signing in or registering as a patient, then choose a department and doctor.
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panel-patient">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Patient portal</p>
+              <h2>Find a doctor and book a visit</h2>
+            </div>
+            <div class="badge" id="patientState">Signed out</div>
+          </div>
+
+          <div class="auth-grid">
+            <form id="patientRegisterForm" class="card">
+              <h3>Create patient account</h3>
+              <label>
+                Full name
+                <input name="fullname" value="Patient User" required />
+              </label>
+              <label>
+                Email
+                <input name="email" type="email" value="patient@example.com" required />
+              </label>
+              <label>
+                Password
+                <input name="password" type="password" value="password123" required />
+              </label>
+              <button type="submit">Register patient</button>
+            </form>
+
+            <form id="patientLoginForm" class="card">
+              <h3>Patient login</h3>
+              <label>
+                Email
+                <input name="email" type="email" value="patient@example.com" required />
+              </label>
+              <label>
+                Password
+                <input name="password" type="password" value="password123" required />
+              </label>
+              <button type="submit">Login patient</button>
+            </form>
+          </div>
+
+          <div class="flow-block">
+            <div class="flow-title">
+              <span class="step-index">1</span>
+              <div>
+                <h3>Choose Department</h3>
+                <p>
+                  Departments are grouped in the frontend from the available doctor list because the
+                  backend does not yet store departments directly.
+                </p>
+              </div>
+            </div>
+            <div id="departmentChips" class="chip-row"></div>
+          </div>
+
+          <div class="flow-block">
+            <div class="flow-title">
+              <span class="step-index">2</span>
+              <div>
+                <h3>Select Doctor</h3>
+                <p>Choose the doctor you want to book with from the filtered list below.</p>
+              </div>
+            </div>
+            <div id="doctorList" class="doctor-grid"></div>
+          </div>
+
+          <div class="flow-block">
+            <div class="flow-title">
+              <span class="step-index">3</span>
+              <div>
+                <h3>View Available Time</h3>
+                <p>Available slots are loaded from the backend for the doctor you selected.</p>
+              </div>
+            </div>
+            <div id="availabilityList" class="slot-grid empty-state">
+              Choose a doctor to view open times.
+            </div>
+          </div>
+
+          <form id="bookingForm" class="card booking-card">
+            <div class="flow-title compact">
+              <span class="step-index">4</span>
+              <div>
+                <h3>Book Appointment</h3>
+                <p>The backend checks the slot before saving the appointment.</p>
+              </div>
+            </div>
+            <label>
+              Appointment reason
+              <textarea name="reason" rows="3" placeholder="Routine checkup" required></textarea>
+            </label>
+            <button type="submit">Book selected time</button>
+          </form>
+
+          <div class="results-grid">
+            <div class="card">
+              <h3>Latest appointment</h3>
+              <pre id="appointmentOutput">No appointment booked yet.</pre>
+            </div>
+            <div class="card">
+              <h3>Patient notifications</h3>
+              <button id="refreshNotifications" type="button" class="secondary">
+                Refresh notifications
+              </button>
+              <div id="notificationList" class="notification-list">
+                No notifications yet.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel panel-doctor">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Doctor desk</p>
+              <h2>Share availability and confirm requests</h2>
+            </div>
+            <div class="badge" id="doctorState">Signed out</div>
+          </div>
+
+          <form id="doctorLoginForm" class="card">
+            <h3>Doctor login</h3>
+            <label>
+              Email
+              <input name="email" type="email" value="test1@gmail.com" required />
+            </label>
+            <label>
+              Password
+              <input name="password" type="password" value="password123" required />
+            </label>
+            <button type="submit">Login doctor</button>
+          </form>
+
+          <form id="availabilityForm" class="card">
+            <h3>Create availability</h3>
+            <label>
+              Date
+              <input name="availableDate" type="date" required />
+            </label>
+            <label>
+              Time slots
+              <input
+                name="slots"
+                value="09:00-10:00, 10:00-11:00, 14:00-15:00"
+                required
+              />
+            </label>
+            <button type="submit">Publish slots</button>
+          </form>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Pending and scheduled appointments</h3>
+              <button id="loadDoctorAppointments" type="button" class="secondary">
+                Refresh
+              </button>
+            </div>
+            <div id="doctorAppointments" class="appointment-list">
+              Doctor appointments will appear here after login.
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
