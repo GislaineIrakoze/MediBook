@@ -34,7 +34,12 @@ app.use(cors({
         }
 
         const normalizedOrigin = origin.replace(/\/$/, "");
-        if (allowedOrigins.includes(normalizedOrigin) || /\.vercel\.app$/.test(new URL(normalizedOrigin).hostname)) {
+        const hostname = new URL(normalizedOrigin).hostname;
+        if (
+            allowedOrigins.includes(normalizedOrigin) ||
+            /\.vercel\.app$/.test(hostname) ||
+            /\.onrender\.com$/.test(hostname)
+        ) {
             callback(null, true);
             return;
         }

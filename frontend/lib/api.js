@@ -1,5 +1,10 @@
+const DEFAULT_PRODUCTION_BACKEND_URL = "https://medibook-backend-8uzh.onrender.com";
+
 export async function apiRequest(path, options = {}) {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "");
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    (process.env.NODE_ENV === "production" ? DEFAULT_PRODUCTION_BACKEND_URL : "");
+  const apiBaseUrl = backendUrl.replace(/\/$/, "");
   const requestPath = path.startsWith("/") ? path : `/${path}`;
   const url = apiBaseUrl ? `${apiBaseUrl}${requestPath}` : requestPath;
 
