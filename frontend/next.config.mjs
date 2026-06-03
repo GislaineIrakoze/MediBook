@@ -4,13 +4,14 @@ import path from "path";
 const nextConfig = {
   devIndicators: false,
   outputFileTracingRoot: path.join(process.cwd(), ".."),
-  webpack(config) {
-    config.resolve.modules = [
-      ...(config.resolve.modules || []),
-      path.join(process.cwd(), "node_modules")
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:5000";
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendUrl}/api/:path*`
+      }
     ];
-
-    return config;
   }
 };
 
