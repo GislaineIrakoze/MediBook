@@ -1,5 +1,9 @@
 export async function apiRequest(path, options = {}) {
-  const response = await fetch(path, {
+  const apiBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "");
+  const requestPath = path.startsWith("/") ? path : `/${path}`;
+  const url = apiBaseUrl ? `${apiBaseUrl}${requestPath}` : requestPath;
+
+  const response = await fetch(url, {
     ...options,
     headers: {
       "Content-Type": "application/json",
