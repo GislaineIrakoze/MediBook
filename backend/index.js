@@ -16,8 +16,32 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    process.env.CORS_ORIGIN,
+    "https://medi-book-phi.vercel.app",
+    "http://localhost:3000"
+]
+    .filter(Boolean)
+    .flatMap((origin) => origin.split(","))
+    .map((origin) => origin.trim().replace(/\/$/, ""));
 
-app.use(cors());
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin) {
+            callback(null, true);
+            return;
+        }
+
+        const normalizedOrigin = origin.replace(/\/$/, "");
+        if (allowedOrigins.includes(normalizedOrigin) || /\.vercel\.app$/.test(new URL(normalizedOrigin).hostname)) {
+            callback(null, true);
+            return;
+        }
+
+        callback(null, false);
+    }
+}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
